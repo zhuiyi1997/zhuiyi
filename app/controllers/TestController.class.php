@@ -1,8 +1,11 @@
 <?php
+use framework\core\Config;
 class TestController extends Controller{
 	public function index()
 	{
-		echo "Test控制器";
+		$config = Config::getInstance();
+		dump($config);
+		
 	}
 
 	public function test($name,$age)

@@ -1,7 +1,11 @@
 <?php
+use framework\core\Log;
+use framework\core\Config;
 class Route{
-	protected $_controller,$_action,$_params,$body;
-	static $_instance;
+	protected $_controller;
+	protected $_action;
+	protected $_params;
+	protected static $_instance;
 
 	public static function getInstance()
 	{
@@ -12,37 +16,42 @@ class Route{
 	}
 
 	private function __construct(){
-
+		$this->_controller = Config::getInstance()->get('app.defaultController');
+		$this->_action = Config::getInstance()->get('app.defaultAction');
+		$this->_params = array();
 		$request = $_SERVER['REQUEST_URI'];
 		$url = parse_url($request);
-		$params = explode('&',$url['query']);
-		foreach($params as $key=>$val){
-			$arr[] = explode('=',$val);
-		}
-		foreach($arr as $k=>list($a,$b))
+		if(isset($url['query']))
 		{
-			$keys[] = $a;
-			$values[] = $b;
+			$params = explode('&',$url['query']);
+			foreach($params as $key=>$val){
+				$arr[] = explode('=',$val);
+			}
+			foreach($arr as $k=>list($a,$b))
+			{
+				$keys[] = $a;
+				$values[] = $b;
+			}
+			$params = array_combine($keys,$values);
+
+		
+			$this->_controller = !empty($params['c'])?$params['c']:$this->_controller;
+
+			$this->_action = !empty($params['a'])?$params['a']:$this->_action;
+			unset($params['c']);
+			unset($params['a']);
+
+		
+			$this->_params = $params;
 		}
-		$params = array_combine($keys,$values);
-
-		
-		$this->_controller = !empty($params['c'])?$params['c']:'index';
-
-		$this->_action = !empty($params['a'])?$params['a']:'index';
-		unset($params['c']);
-		unset($params['a']);
-
-		
-		$this->_params = $params;
-
-		
+	
 	}
 
 	public function route()
 	{
+		Log::init();
 		$this->_controller = ucfirst(strtolower($this->getController()));
-		set_include_path(dirname(__FILE__)."\..\..\app\controllers");
+		set_include_path(dirname(__FILE__)."/../../app/controllers");
 		try{
 			include_once ucfirst(strtolower($this->getController()))."Controller.class.php";
 		}catch(Exception $e){
@@ -75,13 +84,4 @@ class Route{
 		return $this->_action;
 	}
 
-	public function getBody()
-	{
-		return $this->_body;
-	}
-
-	public function setBody()
-	{
-		$this->_body = $body;
-	}
 }

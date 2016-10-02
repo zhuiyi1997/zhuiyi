@@ -9,7 +9,7 @@ class Controller
 		{
 			extract($array);
 		}
-		require_once '/../views/'.$file;
+		require_once '/../views/'.$file.".php";
 		ob_end_flush();
 		
 	}
