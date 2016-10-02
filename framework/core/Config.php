@@ -26,7 +26,7 @@ class Config
 	public function get($name)
 	{
 
-		$file = CONFIG_PATH."\\".$this->filename;
+		$file = CONFIG_PATH."/".$this->filename;
 		$this->config = include $file;
 		if(strpos($name,'.')!==false)
 		{
