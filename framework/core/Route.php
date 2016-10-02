@@ -27,10 +27,10 @@ class Route{
 			foreach($params as $key=>$val){
 				$arr[] = explode('=',$val);
 			}
-			foreach($arr as $k=>list($a,$b))
+			foreach($arr as $k=>$v)
 			{
-				$keys[] = $a;
-				$values[] = $b;
+				$keys[] = $v[0];
+				$values[] = $v[1];
 			}
 			$params = array_combine($keys,$values);
 
