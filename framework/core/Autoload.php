@@ -10,10 +10,10 @@ class Autoload{
 			return true;
 		}else{
 			$class = str_replace('\\','/',$class);
-			$file = str_replace('/','\\',ROOT_DIR."\\".$class.'.class.php');
+			$file = ROOT_DIR."\\".$class.'.class.php';
 			if(!file_exists($file))
 			{
-				$file = str_replace('/','\\',ROOT_DIR.'\\'.$class.'.php');
+				$file = ROOT_DIR.'\\'.$class.'.php';
 			}
 			include $file;
 			self::$classMap[$class] = $class;
