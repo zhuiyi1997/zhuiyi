@@ -122,16 +122,10 @@ abstract class AbstractDumper implements DataDumperInterface, DumperInterface
         if ($output) {
             $prevOutput = $this->setOutput($output);
         }
-        try {
-            $data->dump($this);
-            $this->dumpLine(-1);
-        } catch(\Exception $e){
-            
-        }finally {
-            if ($output) {
-                $this->setOutput($prevOutput);
-            }
-        }
+    
+        $data->dump($this);
+        $this->dumpLine(-1);
+ 
     }
 
     /**
