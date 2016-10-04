@@ -2,16 +2,25 @@
 class Controller
 {
 
-	public function render($file,$array)
+	public function render($file,$array=array())
 	{
-		ob_start();
-		if(!empty($array))
-		{
-			extract($array);
-		}
-		require_once '/../views/'.$file.".php";
-		ob_end_flush();
+		$name = strtolower(get_class($this));
 		
+		preg_match('/(\w+)controller/',substr($name,16),$arr);
+		
+		$controller = $arr[1];
+
+		$filename = VIEW_PATH."/".$controller."/".$file;
+
+			Twig_Autoloader::register();
+			$loader = new Twig_loader_Filesystem(VIEW_PATH);
+			
+			$twig = new Twig_Environment($loader,array(
+					'cache' => ROOT_DIR.'/cache',
+					'debug' => DEBUG,
+				));
+			$template = $twig->loadTemplate($controller.'/'.$file.".php");
+			$template->display($array);
 	}
 }
 ?>

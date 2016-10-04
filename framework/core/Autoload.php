@@ -9,6 +9,7 @@ class Autoload{
 		{
 			return true;
 		}else{
+			
 			self::$classMap[$class] = $class;
 			$class = str_replace('\\','/',$class);
 			$file = ROOT_DIR."/".$class.'.class.php';

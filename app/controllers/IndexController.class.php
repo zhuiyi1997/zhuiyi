@@ -1,5 +1,5 @@
 <?php
-use framework\core\Model;
+namespace app\controllers;
 use framework\core\Config;
 use framework\core\Log;
 use app\models\School;

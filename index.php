@@ -18,7 +18,6 @@ define('CONTROLLERS_PATH',APP_PATH."/controllers");
 define('VIEW_PATH',APP_PATH."/views");
 define('DEBUG',true);
 include "vendor/autoload.php";
-
 if(DEBUG)
 {
 	$whoops = new \Whoops\Run;

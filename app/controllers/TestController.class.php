@@ -1,16 +1,14 @@
 <?php
+namespace app\controllers;
 use framework\core\Config;
-class TestController extends Controller{
+class TestController extends \Controller{
 	public function index()
 	{
-		$config = Config::getInstance();
-		dump($config);
+
+		$data = "zhuiyi";
+		$this->render('index',['data'=>$data]);
 		
 	}
 
-	public function test($name,$age)
-	{
-		echo $name.'|'.$age;
-	}
 }
 ?>

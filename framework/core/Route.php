@@ -51,16 +51,17 @@ class Route{
 	{
 		Log::init();
 		$this->_controller = ucfirst(strtolower($this->getController()));
-		set_include_path(dirname(__FILE__)."/../../app/controllers");
-		try{
-			include_once ucfirst(strtolower($this->getController()))."Controller.class.php";
-		}catch(Exception $e){
-			echo $e->getMessage();
-		}	
+		
 
-			$rc = new ReflectionClass($this->getController()."Controller");
+		$class = "\app\controllers\\".$this->getController()."Controller";
+		
+
+		//$controller = new $class();
+
+			$rc = new ReflectionClass($class);
 				if($rc->hasMethod($this->getAction())){
 					$controller = $rc->newInstance();
+
 					$method = $rc->getMethod($this->getAction());
 					$method->invokeArgs($controller,array_values($this->_params));
 				}else{
