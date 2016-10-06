@@ -13,7 +13,8 @@ class Controller
 		$filename = VIEW_PATH."/".$controller."/".$file;
 
 			Twig_Autoloader::register();
-			$loader = new Twig_loader_Filesystem(VIEW_PATH);
+			$loader = new Twig_Loader_Filesystem(VIEW_PATH);
+
 			
 			$twig = new Twig_Environment($loader,array(
 					'cache' => ROOT_DIR.'/cache',
