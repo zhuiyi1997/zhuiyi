@@ -3,9 +3,9 @@
 return [
 	'database' => [
 		'database_type' => 'mysql',
-		'database_name' => 'test',
-		'server' => 'localhost',
-		'username' => 'root',
+		'database_name' => 'erhuo',
+		'server' => '60.205.163.63',
+		'username' => 'ytc',
 		'password' => 'root',
 		'charset' => 'utf8',
 	],

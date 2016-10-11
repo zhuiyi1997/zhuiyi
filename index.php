@@ -9,7 +9,7 @@
 //url初始化
 //权限验证
 //分发
-
+session_start();
 define('ROOT_DIR',realpath(''));
 define('APP_PATH',ROOT_DIR.'/app');
 define('CORE_PATH',ROOT_DIR.'/framework/core');
@@ -34,7 +34,6 @@ require_once APP_PATH."/common/function.php";
 require_once CORE_PATH."/Route.php";
 require_once CORE_PATH."/Controller.class.php";
 require_once CORE_PATH."/Autoload.php";
-
 spl_autoload_register('Autoload::load');
 
 $route = Route::getInstance();

@@ -3,6 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>留言板</title>
+	<link href="public/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="public/js/Dialog/skin/default.css" rel="stylesheet" />
 	<script src="public/js/jquery.js"></script>
 	<script src="public/js/Dialog/artDialog.basic.js"></script>
@@ -68,6 +69,11 @@
 			<div class="right"></div>
 			</div>
 		{% endfor %}
+	</div>
+	<div class="pagination pagination-right">
+		{% for i in 1..sum %}  
+        	<a href="index.php?c=message&a=index&page={{ i }}">{{ i }} </a>
+    	{% endfor %}  
 	</div>
 </body>
 </html>
