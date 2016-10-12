@@ -37,9 +37,20 @@
 
                 //创建一个标记
                 var point = new BMap.Point(x,y);
+                //var marker = new BMap.Marker(point);
+                //map.addOverlay(marker);
+                translateCallback = function (point){
                 var marker = new BMap.Marker(point);
                 map.addOverlay(marker);
+                map.setCenter(point);
+
+              }
+        
+                setTimeout(function(){
+                    BMap.Convertor.translate(point,0,translateCallback);     //真实经纬度转成百度坐标
+                }, 2000);
                 marker.addEventListener("click",attribute);
+
                 //添加点击事件
                 function attribute(e){
                   //获取具体位置
@@ -340,9 +351,9 @@
             </a>
           </li>
           <li>
-            <a href="category.html" class="">
+            <a href="index.php?c=near&a=add" class="">
                 <span class="am-icon-th-large"></span>
-                <span class="am-navbar-label">分类</span>
+                <span class="am-navbar-label">创建</span>
             </a>
           </li>
        

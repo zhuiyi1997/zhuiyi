@@ -9,7 +9,7 @@ class NearController extends \Controller{
 		$model = new Model();
 		$data = $model->select('near','*');
 		//判断鱼塘距离，获取经纬度
-		
+
 		$this->render('index');
 		
 	}
@@ -47,21 +47,23 @@ class NearController extends \Controller{
 			return round($calculatedDistance); 
 	} 
 
-	public function map()
+	//显示添加附近
+	public function add()
 	{
-		$file = 'http://ip.taobao.com/service/getIpInfo2.php?ip=myip';
-		$content = file_get_contents($file);
-		$a = "/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/";
-		preg_match_all($a,$content,$match);
-		$getIp = $match[0][0];
+		$this->render('add');
+	}
 
-		$content = file_get_contents("http://api.map.baidu.com/location/ip?ak=SnS6Z2pa2I3hpTTSoBKBAvN3i8zZLho9&ip=".$getIp."&coor=bd09ll");
-  		$json = json_decode($content);
- 		
-  		$data['x'] = $json->content->point->x;//按层级关系提取经度数据
-
-  		$data['y'] = $json->content->point->y;//按层级关系提取纬度数据
-  		echo json_encode($data);
+	//鱼塘进行入库
+	public function save()
+	{
+		$data = $_POST;
+		$file = $_FILES['near_image'];
+		$info = pathinfo($file['name']);
+		$name = md5(uniqid(rand(),true)).'.'.$info['extension'];
+		move_uploaded_file($file['tmp_name'], ROOT_DIR.'/public/upload/'.$name);
+		$data['image'] = $name;
+		$model = new Model();
+		$model->insert('near',$data);
 	}
 
 }
