@@ -8,7 +8,6 @@
   </style>
   <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=SnS6Z2pa2I3hpTTSoBKBAvN3i8zZLho9"></script>
   <title>逆地址解析</title>
-</head>
 <body>
   <div id="allmap"></div>
   <p>点击地图展示详细地址</p>

@@ -15,7 +15,7 @@
         <script src="theme/js/jquery-1.10.2.min.js"></script>
         <script src="theme/js/time.js"></script>
         <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=SnS6Z2pa2I3hpTTSoBKBAvN3i8zZLho9"></script> 
-        <script type="text/javascript" src="http://developer.baidu.com/map/jsdemo/demo/convertor.js"></script> 
+        <script type="text/javascript" src="public/js/convertor.js"></script> 
         <script>
         $(function () {
                         
@@ -26,57 +26,78 @@
              function showPosition(position){  
                 var x = position.coords.longitude;
                 var y = position.coords.latitude;
-                //标记并加上label
-                // 百度地图API功能
-                var map = new BMap.Map("allmap");    // 创建Map实例
-                map.centerAndZoom(new BMap.Point(x,y), 11);  // 初始化地图,设置中心点坐标和地图级别
-                map.addControl(new BMap.MapTypeControl()); 
-                map.enableScrollWheelZoom(true);
-                //初始化一个地址解析类
-                var geoc = new BMap.Geocoder(); 
+                $.ajax({
+                    'url':'index.php?c=near&a=getNear',
+                    'data':'x='+x+"&y="+y,
+                    'type':'post',
+                    success:function(msg){
 
-                //创建一个标记
-                var point = new BMap.Point(x,y);
-                //var marker = new BMap.Marker(point);
-                //map.addOverlay(marker);
-                translateCallback = function (point){
-                var marker = new BMap.Marker(point);
-                map.addOverlay(marker);
-                map.setCenter(point);
+                    
+                        eval("var data="+msg)
+                        // 百度地图API功能
+                        var map = new BMap.Map("allmap");    // 创建Map实例
+                        map.centerAndZoom(new BMap.Point(x,y), 16);  // 初始化地图,设置中心点坐标和地图级别
+                        map.addControl(new BMap.MapTypeControl()); 
+                        map.enableScrollWheelZoom(true);
+                    
+                        //初始化一个地址解析类
+                        var geoc = new BMap.Geocoder(); 
+                         translateCallback = function (point){
+                            var marker = new BMap.Marker(point);
+                            map.addOverlay(marker);
+                            
+                            //map.setCenter(point);                     
+                            //location.href = 'index.php?c=near&a/mynear';
+                        }
+                         translateCallback2 = function (point){
+                            var marker = new BMap.Marker(point,{icon:myIcon});
+                            map.addOverlay(marker);
+                            map.setCenter(point);                  
+                            //location.href = 'index.php?c=near&a/mynear';
+                        }
 
-              }
-        
-                setTimeout(function(){
-                    BMap.Convertor.translate(point,0,translateCallback);     //真实经纬度转成百度坐标
-                }, 2000);
-                marker.addEventListener("click",attribute);
+                        function openinfo(e,content) 
+                        {
+                            var opts = {
+                                width : 250,     // 信息窗口宽度
+                                height: 80,     // 信息窗口高度
+                                title : "信息窗口", // 信息窗口标题
+                                enableMessage:true//设置允许信息窗发送短息
+                                 };
+                            var p = e.target;
+                            var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+                            var infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象 
+                            map.openInfoWindow(infoWindow,point); //开启信息窗口
+                        }
 
-                //添加点击事件
-                function attribute(e){
-                  //获取具体位置
-                   var pt = e.point;
-                    geoc.getLocation(pt, function(rs){
-                      var addComp = rs.addressComponents;
-                      var dizhi = addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber;
-                      openinfo(dizhi,e);
-                    });
-                }
+                        //创建一个标记
+                        var point = new BMap.Point(x,y);
+                        var myIcon = new BMap.Icon("http://api.map.baidu.com/img/markers.png", new BMap.Size(23, 25), {  
+                              offset: new BMap.Size(10, 25), // 指定定位位置  
+                              imageOffset: new BMap.Size(0, 0 - 10 * 25) // 设置图片偏移  
+                        });  
+                        BMap.Convertor.translate(point,0,translateCallback2); 
+                        //var marker = new BMap.Marker(point);
+                        //map.addOverlay(marker);
+                        
 
-                function openinfo(content,e) 
-                {
-                    var opts = {
-                        width : 250,     // 信息窗口宽度
-                        height: 80,     // 信息窗口高度
-                        title : "信息窗口" , // 信息窗口标题
-                        enableMessage:true//设置允许信息窗发送短息
-                         };
-                    var p = e.target;
-                    var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
-                    var infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象 
-                    map.openInfoWindow(infoWindow,point); //开启信息窗口
-                }
+
+                        for(var i in data)
+                        {
+                             var pointone = new BMap.Point(data[i].near_long,data[i].near_lat);
+                             var html = "<li><a href='index.php?c=near&a=mynear&id="+data[i].id+"'><img src='public/upload/"+data[i].near_image+"' width='100px' height='200px'><div style='width: 70%; float: left;'><h3 class='title'>"+data[i].near_name+"</h3><p class='intro'>"+data[i].near_desc+"</p><span>约"+data[i].distance+"米</span></div></a></li>";
+                             $('.yule').append(html)
+                             BMap.Convertor.translate(pointone,0,translateCallback);
+                        }
+                        
+                    }
+              })
 
              }
+
+             $('#add').click(function(){
+                location.href='index.php?c=near&a=list';
+             })
 
         });
 
@@ -116,74 +137,7 @@
     <li><img src="images/banner1.png" /></li>
   </ul>
 </div>
-<!--导航-->
- <ul class="sq-nav"  >
-      <li>
-        <div class="am-gallery-item">
-            <a href="newproduct.html" class="">
-              <img src="images/icon.png" />
-              <p>新品</p>
-            </a>
-        </div>
-      </li>
-      <li>
-        <div class="am-gallery-item">
-            <a href="specialprice.html" class="">
-              <img src="images/icon1.png" />
-              <p>特价</p>
-            </a>
-        </div>
-      </li>
-      <li>
-        <div class="am-gallery-item">
-            <a href="reserve.html" class="">
-              <img src="images/icon2.png" />
-              <p>预定</p>
-            </a>
-        </div>
-      </li>
-      <li>
-        <div class="am-gallery-item">
-            <a href="integral.html" class="">
-              <img src="images/icon3.png" />
-              <p>积分</p>
-            </a>
-        </div>
-      </li>
-      <li>
-        <div class="am-gallery-item">
-            <a href="allchips.html" class="">
-              <img src="images/icon4.png" />
-              <p>众筹</p>
-            </a>
-        </div>
-      </li>
-      <li>
-        <div class="am-gallery-item">
-            <a href="whitebar.html" class="">
-              <img src="images/icon5.png" />
-              <p>白条</p>
-            </a>
-        </div>
-      </li>
-      <li>
-        <div class="am-gallery-item">
-            <a href="news.html" class="">
-              <img src="images/icon6.png" />
-              <p>头条</p>
-            </a>
-        </div>
-      </li>
-      <li>
-        <div class="am-gallery-item">
-            <a href="category.html" class="">
-              <img src="images/icon7.png" />
-              <p>分类</p>
-            </a>
-        </div>
-      </li>
-  </ul>
- <!--限时秒杀 -->
+
  <div class="sq-title">
     <i class="am-icon-volume-up"></i>
     <div class="fnTimeCountDown" data-end="2018/07/08 18:45:13">
@@ -195,159 +149,18 @@
     </script>
  </div>
  <div style="max-width:100%,min-width:100%" id="allmap"></div>
- <!--
- <div style="max-width:100%">
-    <div style="max-width:100%,min-width:100%" id="allmap"></div>
- </div>
- -->
-  <ul data-am-widget="gallery" class="am-gallery pro-list am-avg-sm-3 am-avg-md-3 am-avg-lg-4 am-gallery-default"  >
-      <li>
-        <div class="am-gallery-item">
-            <a href="detail.html" class="">
-              <img src=" images/test.png" />
-                <h3 class="am-gallery-title">猪骨头棒新鲜生鲜肉制品猪大骨头筒骨熬汤佳品500g</h3>
-                <div class="am-gallery-desc">￥52</div>
-            </a>
-        </div>
-      </li>
-      <li>
-        <div class="am-gallery-item">
-            <a href="detail.html" class="">
-              <img src=" images/test1.png" />
-                <h3 class="am-gallery-title">冻品批发大江鸡腿 冷鲜鸡腿放心食材1kg 冷冻食材</h3>
-                <div class="am-gallery-desc">￥39</div>
-            </a>
-        </div>
-      </li>
-        <li>
-        <div class="am-gallery-item">
-            <a href="detail.html" class="">
-              <img src=" images/test2.png" />
-                <h3 class="am-gallery-title">法国加力果12个装 进口新鲜水果 嘎啦苹果 包邮</h3>
-                <div class="am-gallery-desc">￥45.8</div>
-            </a>
-        </div>
-      </li>
-  </ul>
- <!-- 特色专区-->
-  <div class="sq-title">
-    <img src="images/ts.png" width="24"/>
-    特色专区
- </div>
-  <ul data-am-widget="gallery" class="am-gallery pro-list am-avg-sm-3 am-avg-md-3 am-avg-lg-4 am-gallery-default"  >
-      <li>
-        <div class="am-gallery-item">
-            <a href="detail.html" class="">
-              <img src=" images/test3.png" />
-                <h3 class="am-gallery-title">猪骨头棒新鲜生鲜肉制品猪大骨头筒骨熬汤佳品500g</h3>
-                <div class="am-gallery-desc">￥52</div>
-            </a>
-        </div>
-      </li>
-      <li>
-        <div class="am-gallery-item">
-            <a href="detail.html" class="">
-              <img src=" images/test4.png" />
-                <h3 class="am-gallery-title">冻品批发大江鸡腿 冷鲜鸡腿放心食材1kg 冷冻食材</h3>
-                <div class="am-gallery-desc">￥39</div>
-            </a>
-        </div>
-      </li>
-        <li>
-        <div class="am-gallery-item">
-            <a href="detail.html" class="">
-              <img src=" images/test5.png" />
-                <h3 class="am-gallery-title">法国加力果12个装 进口新鲜水果 嘎啦苹果 包邮</h3>
-                <div class="am-gallery-desc">￥45.8</div>
-            </a>
-        </div>
-      </li>
-  </ul>
-  <!-- 精品专区-->
-  <div class="sq-title">
-    <img src="images/jp.png" width="24"/>
-    精品专区
- </div>
-  <ul data-am-widget="gallery" class="am-gallery pro-list am-avg-sm-3 am-avg-md-3 am-avg-lg-4 am-gallery-default"  >
-      <li>
-        <div class="am-gallery-item">
-            <a href="detail.html" class="">
-              <img src=" images/test.png" />
-                <h3 class="am-gallery-title">猪骨头棒新鲜生鲜肉制品猪大骨头筒骨熬汤佳品500g</h3>
-                <div class="am-gallery-desc">￥52</div>
-            </a>
-        </div>
-      </li>
-      <li>
-        <div class="am-gallery-item">
-            <a href="detail.html" class="">
-              <img src=" images/test1.png" />
-                <h3 class="am-gallery-title">冻品批发大江鸡腿 冷鲜鸡腿放心食材1kg 冷冻食材</h3>
-                <div class="am-gallery-desc">￥39</div>
-            </a>
-        </div>
-      </li>
-        <li>
-        <div class="am-gallery-item">
-            <a href="detail.html" class="">
-              <img src=" images/test2.png" />
-                <h3 class="am-gallery-title">法国加力果12个装 进口新鲜水果 嘎啦苹果 包邮</h3>
-                <div class="am-gallery-desc">￥45.8</div>
-            </a>
-        </div>
-      </li>
-  </ul>
-  <!-- 便民-->
-  <div class="sq-title">
-    <img src="images/bm.png" width="24"/>
-    便民服务
- </div>
  <ul class="yule">
-        <li>
-            <a href="news.html">
-                <img src="images/test.jpg">
-                <div style="width: 70%; float: left;">
-                <h3 class="title">青山湖区熊氏锁业</h3>
-                <p class="intro">开、修、换各式民用锁具（各类普通房门、防盗门、车库门、密码箱</p>
-                </div>
-            </a>
-        </li>
-        <li>
-            <a href="news.html">
-                <img src="images/test.jpg">
-                <div style="width: 70%; float: left;">
-                <h3 class="title">青山湖区熊氏锁业</h3>
-                <p class="intro">开、修、换各式民用锁具（各类普通房门、防盗门、车库门、密码箱</p>
-                </div>
-            </a>
-        </li>
-        <li>
-            <a href="news.html">
-                <img src="images/test.jpg">
-                <div style="width: 70%; float: left;">
-                <h3 class="title">青山湖区熊氏锁业</h3>
-                <p class="intro">开、修、换各式民用锁具（各类普通房门、防盗门、车库门、密码箱</p>
-                </div>
-            </a>
-        </li>
-        <li>
-            <a href="news.html">
-                <img src="images/test.jpg">
-                <div style="width: 70%; float: left;">
-                <h3 class="title">青山湖区熊氏锁业</h3>
-                <p class="intro">开、修、换各式民用锁具（各类普通房门、防盗门、车库门、密码箱</p>
-                </div>
-            </a>
-        </li>
+       
  </ul>
+ <input type="button" class="login-btn" value="更多" id="add"/>
  <!--底部-->
  <div style="height: 55px;"></div>
  <div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default sq-foot am-no-layout" id="">
       <ul class="am-navbar-nav am-cf am-avg-sm-4">   
           <li>
-            <a href="index.html" class="curr">
+            <a href="index.php?c=near&a=index" class="curr">
                 <span class="am-icon-home"></span>
-                <span class="am-navbar-label">首页</span>
+                <span class="am-navbar-label">鱼塘</span>
             </a>
           </li>
           <li>
